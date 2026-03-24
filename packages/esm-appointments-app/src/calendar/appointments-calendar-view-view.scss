@@ -11,6 +11,18 @@
   grid-template-rows: repeat(6, minmax(0px, 1fr));
 }
 
+.weeklyCalendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0px, 1fr));
+  grid-template-rows: minmax(0px, 1fr);
+}
+
+.dailyCalendar {
+  display: grid;
+  grid-template-columns: minmax(0px, 1fr);
+  grid-template-rows: minmax(0px, 1fr);
+}
+
 .calendarViewContainer {
   margin: layout.$spacing-05;
 }

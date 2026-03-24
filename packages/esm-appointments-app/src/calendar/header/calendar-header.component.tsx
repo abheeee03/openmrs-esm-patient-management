@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@carbon/react';
@@ -8,7 +8,11 @@ import { spaHomePage } from '../../constants';
 import { useSelectedDate } from '../../hooks/useSelectedDate';
 import styles from './calendar-header.scss';
 
-const CalendarHeader: React.FC = () => {
+interface CalendarHeaderProps {
+  actions?: ReactNode;
+}
+
+const CalendarHeader: React.FC<CalendarHeaderProps> = ({ actions }) => {
   const { t } = useTranslation();
   const selectedDate = useSelectedDate();
 
@@ -28,9 +32,9 @@ const CalendarHeader: React.FC = () => {
           size="lg">
           <span>{t('back', 'Back')}</span>
         </Button>
+        {actions ? <div className={styles.actionsContainer}>{actions}</div> : null}
       </div>
     </div>
   );
 };
-
 export default CalendarHeader;

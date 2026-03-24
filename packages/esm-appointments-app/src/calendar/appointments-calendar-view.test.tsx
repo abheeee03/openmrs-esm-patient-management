@@ -1,23 +1,57 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import AppointmentsCalendarView from './appointments-calendar-view.component';
 import { BrowserRouter } from 'react-router-dom';
+import { useAppointmentsCalendar } from '../hooks/useAppointmentsCalendar';
+
+jest.mock('../hooks/useAppointmentsCalendar', () => ({
+  useAppointmentsCalendar: jest.fn(),
+}));
+
+const mockUseAppointmentsCalendar = jest.mocked(useAppointmentsCalendar);
 
 describe('Appointment calendar view', () => {
-  it('renders appointments in calendar view from appointments list', async () => {
+  beforeEach(() => {
+    mockUseAppointmentsCalendar.mockReturnValue({
+      isLoading: false,
+      calendarEvents: [],
+      error: undefined,
+    });
+  });
+
+  it('renders monthly view by default and switches between day, week and month', async () => {
     render(
       <BrowserRouter>
         <AppointmentsCalendarView />
       </BrowserRouter>,
     );
 
-    const expectedTableRows = [
-      /John Wilson 30-Aug-2021 03:35 03:35 Dr James Cook Outpatient Walk in appointments/,
-      /Neil Amstrong 10-Sept-2021 03:50 03:50 Dr James Cook Outpatient Some additional notes/,
-    ];
+    expect(screen.getByTestId('monthly-calendar-view')).toBeInTheDocument();
+    expect(screen.queryByTestId('weekly-calendar-view')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('daily-calendar-view')).not.toBeInTheDocument();
 
-    expectedTableRows.forEach((row) => {
-      expect(screen.queryByRole('row', { name: new RegExp(row, 'i') })).not.toBeInTheDocument();
-    });
+    fireEvent.click(screen.getByRole('button', { name: /day/i }));
+
+    expect(screen.getByTestId('daily-calendar-view')).toBeInTheDocument();
+    expect(screen.queryByTestId('weekly-calendar-view')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('monthly-calendar-view')).not.toBeInTheDocument();
+
+    expect(mockUseAppointmentsCalendar).toHaveBeenCalledWith(expect.any(String), 'daily');
+
+    fireEvent.click(screen.getByRole('button', { name: /week/i }));
+
+    expect(screen.getByTestId('weekly-calendar-view')).toBeInTheDocument();
+    expect(screen.queryByTestId('daily-calendar-view')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('monthly-calendar-view')).not.toBeInTheDocument();
+
+    expect(mockUseAppointmentsCalendar).toHaveBeenCalledWith(expect.any(String), 'weekly');
+
+    fireEvent.click(screen.getByRole('button', { name: /month/i }));
+
+    expect(screen.getByTestId('monthly-calendar-view')).toBeInTheDocument();
+    expect(screen.queryByTestId('daily-calendar-view')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('weekly-calendar-view')).not.toBeInTheDocument();
+
+    expect(mockUseAppointmentsCalendar).toHaveBeenCalledWith(expect.any(String), 'monthly');
   });
 });

@@ -18,7 +18,7 @@ const MonthlyCalendarView: React.FC<MonthlyCalendarViewProps> = ({ events }) => 
   const selectedDate = useSelectedDate();
 
   return (
-    <div className={styles.calendarViewContainer}>
+    <div className={styles.calendarViewContainer} data-testid="monthly-calendar-view">
       <MonthlyHeader />
       <div className={styles.wrapper}>
         <div className={styles.monthlyCalendar}>

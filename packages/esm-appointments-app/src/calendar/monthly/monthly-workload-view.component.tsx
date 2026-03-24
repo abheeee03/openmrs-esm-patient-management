@@ -14,9 +14,15 @@ export interface MonthlyWorkloadViewProps {
   events: Array<DailyAppointmentsCountByService>;
   dateTime: Dayjs;
   showAllServices?: boolean;
+  restrictToSelectedMonth?: boolean;
 }
 
-const MonthlyWorkloadView: React.FC<MonthlyWorkloadViewProps> = ({ dateTime, events, showAllServices = false }) => {
+const MonthlyWorkloadView: React.FC<MonthlyWorkloadViewProps> = ({
+  dateTime,
+  events,
+  showAllServices = false,
+  restrictToSelectedMonth = true,
+}) => {
   const layout = useLayoutType();
   const selectedDate = useSelectedDate();
 
@@ -52,7 +58,7 @@ const MonthlyWorkloadView: React.FC<MonthlyWorkloadViewProps> = ({ dateTime, eve
     <div
       onClick={() => navigateToAppointmentsByDate('')}
       className={classNames(
-        styles[isSameMonth(dateTime, dayjs(selectedDate)) ? 'monthly-cell' : 'monthly-cell-disabled'],
+        styles[restrictToSelectedMonth && !isSameMonth(dateTime, dayjs(selectedDate)) ? 'monthly-cell-disabled' : 'monthly-cell'],
         showAllServices
           ? {}
           : {
@@ -60,7 +66,7 @@ const MonthlyWorkloadView: React.FC<MonthlyWorkloadViewProps> = ({ dateTime, eve
               [styles.largeDesktop]: layout !== 'small-desktop',
             },
       )}>
-      {isSameMonth(dateTime, dayjs(selectedDate)) && (
+      {(!restrictToSelectedMonth || isSameMonth(dateTime, dayjs(selectedDate))) && (
         <div>
           <span className={classNames(styles.totals)}>
             {currentData?.services ? (
